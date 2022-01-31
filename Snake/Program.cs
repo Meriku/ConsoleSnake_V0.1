@@ -16,20 +16,23 @@ namespace Snake
 
         static void Main(string[] args)
         {
-        
+            
             Thread thread = new Thread(new ThreadStart(SnakeMoving));   // Отдельный поток для отрисовки новой картинки раз в 0.5 секунд
             thread.Start();
 
             PlayGround.CreatePlayGround();                              // Создаем игровое поле
  
             PlayGround.DrawPlayGround();                                // Рисуем игровое поле
-
-    
-
+     
             while (true)                                                // Отлавливаем нажатие клавиши 
             {
-
+                
                 ConsoleKeyInfo key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter) // ЗАТЫЧКА ДЛЯ РОСТА ВРУЧНУЮ
+                {
+                    FirstSnake.EatAndGrow();
+                }
 
                 if (GameStarted == false && Game.IsKeyWASD(key))
                 {
@@ -41,19 +44,14 @@ namespace Snake
                     KeyPressed = key;                                   // Двигаться в змейке мы не можем - мы можем только менять направление движения,
                                                                         // поэтому просто передаем значение нажатой клавиши в SnakeMoving ()
                 }
-
             }
-
-
         }
      
 
         static void SnakeMoving ()
         {
-
             while (true)
             {
-
                 if (GameStarted && Game.IsKeyWASD(KeyPressed) && Game.IsRightDirect(KeyPressed, FirstSnake.SnakeDirection))             // Было ли передано нажатие клавиши, началась ли игра
                                                                                                                                         // Была ли нажата одна из подходящих клавиш
                                                                                                                                         // И не захотел ли игрок начать движение в противоположную сторону
@@ -80,22 +78,10 @@ namespace Snake
                         FirstSnake.Move(new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false));
                     }
                 }
-
-                                         
-     
-                Thread.Sleep(500);          
-
-                
-
-            }
-            
-
+                                             
+                Thread.Sleep(250);                        
+            }           
         }
-
-
-
-
-
     }
 
 

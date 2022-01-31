@@ -12,27 +12,79 @@ namespace Snake
     {
         public string SnakeDirection;
 
-        //TODO: создание в случайном месте еды для змейки, рост змейки
+        //TODO: создание в случайном месте еды для змейки
 
-        public void Move(ConsoleKeyInfo pressedkey)     // Меняем положение змеи 
+        public void Move(ConsoleKeyInfo pressedkey)         
         {
-            PlayerTurn = true;
 
-            newSnake.Add(new int[2]);                   // Добавляем значение в список = элементы змеи
-            newSnake.Add(new int[2]);                   
-            newSnake.Add(new int[2]);
-            newSnake.Add(new int[2]);
-            newSnake.Add(new int[2]);
-            newSnake.Add(new int[2]);                   // Последний элемент существует для того что бы перекрашивать в фоновый цвет "пиксели" после змейки 
-                          
+            if (newSnake.Count < 4)                         // Создание змейки первый раз в игре
+            {
+                newSnake.Add(new int[2]);                   
+                newSnake.Add(new int[2]);
+                newSnake.Add(new int[2]);
+                newSnake.Add(new int[2]);                    
+            }
+
+  
+            for (int n = newSnake.Count-1; n >= 1; n--)     // Сохраняем в n максимальный индекс списка и идем от большего к меньшему
+            {
+                newSnake[n][0] = newSnake[n-1][0];          // X 
+                newSnake[n][1] = newSnake[n-1][1];          // Y        
+            }
+
+
+            int[] direction = GetDirection(pressedkey);     // Получаем направление движения по переданному значению нажатой кнопки
+              
+            newSnake[0][0] += direction[0];                 // X "головы" змеи
+            newSnake[0][1] += direction[1];                 // Y "головы" змеи
+
+            MoveSnake(newSnake);                            // Передаем положения змеи для отрисовки
+
+        }
+
+
+        public void MoveSnake(List<int[]> position)       
+        {
+
+            //TODO: проверка выхода с границ массива
+            //TODO: проверка врезания головы змеи в тело змеи
+
+            for (int i = 0; i < newSnake.Count; i++)
+            {
+                if (i < (newSnake.Count - 1))
+                {
+                    newPlayGround[24 + position[i][0], 22 + position[i][1]] = "██";     // Закрашиваем поле где будет змея
+                }
+                else
+                {
+                    newPlayGround[24 + position[i][0], 22 + position[i][1]] = "  ";     // Закрашиваем поле откуда змея ушла последний элемент 
+                }
+            }          
+
+            PlayGround.DrawPlayGround();                        // Рисуем новое положение змеи
+
+        }
+
+
+
+        public void EatAndGrow()                                // Рост змеи
+        {
+
+            newSnake.Add(new int[2]);                           // Добавляем новый элемент змеи
+
+        }
+
+
+        public int[] GetDirection (ConsoleKeyInfo pressedkey)   // Получаем координаты движения в зависимости от нажатой клавиши. 
+        {
 
             int[] direction = new int[2];
-            
+
             if (pressedkey.Key == ConsoleKey.W || pressedkey.Key == ConsoleKey.UpArrow)
             {
                 SnakeDirection = "W";
                 direction[0] = 0;   // X
-                direction[1] = -1;   // Y
+                direction[1] = -1;  // Y - вверх
             }
             if (pressedkey.Key == ConsoleKey.D || pressedkey.Key == ConsoleKey.RightArrow)
             {
@@ -50,64 +102,23 @@ namespace Snake
             {
                 SnakeDirection = "S";
                 direction[0] = 0;   // X
-                direction[1] = 1;   // Y - увеличивается поскольку большие значения массива находятся внизу 
+                direction[1] = 1;   // Y - вниз 
             }
 
-
-            //TODO: Создать добавление новых элементов и изменение их координат через цикл или метод. То что сейчас - сугубо для теста. 
-
-
-            newSnake[5][0] = newSnake[4][0]; 
-            newSnake[5][1] = newSnake[4][1];
-
-            newSnake[4][0] = newSnake[3][0]; 
-            newSnake[4][1] = newSnake[3][1]; 
-
-            newSnake[3][0] = newSnake[2][0]; // Сохраняем значения X и Y третьего элемента в четвертом элементе, перед изменением координат третьего элемента 
-            newSnake[3][1] = newSnake[2][1]; 
-
-            newSnake[2][0] = newSnake[1][0]; // Сохраняем значения X и Y второго элемента в третьем элементе, перед изменением координат второго элемента 
-            newSnake[2][1] = newSnake[1][1]; 
-
-            newSnake[1][0] = newSnake[0][0]; // Сохраняем значения X и Y головы змеи в втором её элементе, перед изменением координат головы змеи 
-            newSnake[1][1] = newSnake[0][1]; 
-
-
-            newSnake[0][0] += direction[0]; // Меняем координаты X "головы" змеи
-            newSnake[0][1] += direction[1]; // Меняем координаты Y "головы" змеи
-
-
-            MoveSnake(newSnake);
-
-        }
-
-
-        public void MoveSnake(List<int[]> position)                         // Рисуем новое положение змеи
-        {
-
-            //TODO: проверка выхода с границ массива
-
-
-            newPlayGround[24 + position[5][0], 22 + position[5][1]] = "░░"; // Закрашиваем поле откуда змея ушла
-            newPlayGround[24 + position[4][0], 22 + position[4][1]] = "██"; // Закрашиваем поле откуда змея ушла
-            newPlayGround[24 + position[3][0], 22 + position[3][1]] = "██"; // Закрашиваем поле откуда змея ушла
-            newPlayGround[24 + position[2][0], 22 + position[2][1]] = "██"; // Закрашиваем поле откуда змея ушла
-            newPlayGround[24 + position[1][0], 22 + position[1][1]] = "██"; // 
-            newPlayGround[24 + position[0][0], 22 + position[0][1]] = "██"; // Закрашиваем поле где будет змея
-
-            PlayGround.DrawPlayGround();
+            return direction;
 
         }
 
 
 
-        public string SnakeToString()                                       // Вывод координат всех элементов змеи. 
+
+        public string SnakeToString()                           // Вывод координат всех элементов змеи. (Метод отладки)
         {
             string result = "";
 
             foreach (var item in newSnake)
             {
-                result += $"\nX = {item[0].ToString()}, Y = {item[1].ToString()}";
+                result += $"\nX = {item[0]}, Y = {item[1]}";
             }
 
             return result;
