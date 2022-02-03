@@ -8,78 +8,53 @@ using System.Windows.Input;
 
 namespace Snake
 {
+
     internal class Program
     {
-        public static Snake FirstSnake = new Snake();
-        public static bool GameStarted = false;
-        public static ConsoleKeyInfo KeyPressed;
+        static object locker = new object();
 
         static void Main(string[] args)
         {
-            
-            Thread thread = new Thread(new ThreadStart(SnakeMoving));   // Отдельный поток для отрисовки новой картинки раз в 0.5 секунд
-            thread.Start();
+            Console.SetWindowSize(110, 45);
+            Console.SetBufferSize(110, 45);
+            Console.CursorVisible = false;
+            Game.ToDraw(10,2, "To start press 'W'");                    
 
-            PlayGround.CreatePlayGround();                              // Создаем игровое поле
- 
-            PlayGround.DrawPlayGround();                                // Рисуем игровое поле
+            Thread SnakeMove = new Thread(new ThreadStart(SnakeMoving));    // Отдельный поток для постоянного движения змеи      
+            PlayGround.CreatePlayGround();                                  // Создаем игровое поле
      
-            while (true)                                                // Отлавливаем нажатие клавиши 
+            while (true)                                                    // Отлавливаем нажатие клавиши 
             {
-                
-                ConsoleKeyInfo key = Console.ReadKey(true);
-
-                if (key.Key == ConsoleKey.Enter) // ЗАТЫЧКА ДЛЯ РОСТА ВРУЧНУЮ
+                ConsoleKeyInfo PressedKey = Console.ReadKey(true);          // Записываем значение кнопки
+                if (!Game.IsStarted && Game.IsKeyWASD(PressedKey))          // Если была нажата кнопка WASD - начинаем игру 
                 {
-                    FirstSnake.EatAndGrow();
+                    Game.IsStarted = true;
+                    Game.GenerateFood();
+                    SnakeMove.Start();
                 }
+              
+                if (Game.IsStarted && Game.IsKeyWASD(PressedKey) && Game.IsKeyRightDirect(PressedKey, Game.OldPressedKey))
+                {                                                           // Если игра начата, передаем нажатие кнопки для дальнейшей обработки
+                    lock (locker)
+                    {
+                        Snake.MoveAndDraw(PressedKey);                      // Передаем нажатую кнопку для движение в заданную сторону
 
-                if (GameStarted == false && Game.IsKeyWASD(key))
-                {
-                    GameStarted = true;
-                }
-
-                if (GameStarted == true && Game.IsKeyWASD(key))
-                {
-                    KeyPressed = key;                                   // Двигаться в змейке мы не можем - мы можем только менять направление движения,
-                                                                        // поэтому просто передаем значение нажатой клавиши в SnakeMoving ()
+                    }
                 }
             }
         }
      
 
-        static void SnakeMoving ()
-        {
+        static void SnakeMoving ()                                      // Отдельный поток для движения змеи без участия игрока 
+        {           
             while (true)
             {
-                if (GameStarted && Game.IsKeyWASD(KeyPressed) && Game.IsRightDirect(KeyPressed, FirstSnake.SnakeDirection))             // Было ли передано нажатие клавиши, началась ли игра
-                                                                                                                                        // Была ли нажата одна из подходящих клавиш
-                                                                                                                                        // И не захотел ли игрок начать движение в противоположную сторону
+                lock (locker)
                 {
-                    FirstSnake.Move(KeyPressed);                                                                                        // Двигаем змейку
-                    KeyPressed = new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);                                     // Обнуляем значение нажатой клавиши (заменяем на " ")
+                    Snake.MoveAndDraw(Game.OldPressedKey);              // Движемся в ту сторону в которую двигались до этого 
+                    Thread.Sleep(150);
+
                 }
-                else                                                                                                                    // Если нажатия не было - продолжаем движение в том же векторе
-                {
-                    if (string.Equals(FirstSnake.SnakeDirection, "W"))
-                    {
-                        FirstSnake.Move(new ConsoleKeyInfo('W', ConsoleKey.W, false, false, false));
-                    }
-                    if (string.Equals(FirstSnake.SnakeDirection, "D"))
-                    {
-                        FirstSnake.Move(new ConsoleKeyInfo('D', ConsoleKey.D, false, false, false));
-                    }
-                    if (string.Equals(FirstSnake.SnakeDirection, "A"))
-                    {
-                        FirstSnake.Move(new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false));
-                    }
-                    if (string.Equals(FirstSnake.SnakeDirection, "S"))
-                    {
-                        FirstSnake.Move(new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false));
-                    }
-                }
-                                             
-                Thread.Sleep(250);                        
             }           
         }
     }
