@@ -19,7 +19,7 @@ namespace Snake
             Console.SetBufferSize(110, 45);
             Console.CursorVisible = false;
             Game.ToDraw(10,2, "To start press 'W'");                    
-
+            
             Thread SnakeMove = new Thread(new ThreadStart(SnakeMoving));    // Отдельный поток для постоянного движения змеи      
             PlayGround.CreatePlayGround();                                  // Создаем игровое поле
      
