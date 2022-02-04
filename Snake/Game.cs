@@ -16,6 +16,8 @@ namespace Snake
 
         public static bool IsStarted = false;
 
+        public static bool IsGameEnded = false;
+
 
         public static bool IsKeyRightDirect (ConsoleKeyInfo newKey, ConsoleKeyInfo oldKey)  //  Метод, проверяющий не захотел ли пользователь развернуться на 180 градусов (так нельзя) 
                                                                                             //  Метод, не позволяющий двигаться быстрее нажимая клавишу движения в сторону в которую производится движение 
@@ -114,22 +116,11 @@ namespace Snake
         public static void ToDrawBorders (int X, int Y)
         {
             Y += 5;
-            X += 5;
-            if (X == 0)
-            {
-                Console.SetCursorPosition(X, Y);
-                Console.Write("█");
-                Console.SetCursorPosition(1, Y);
-                Console.Write("█");
-            }
-            else
-            {
-                Console.SetCursorPosition(X*2, Y);
-                Console.Write("█");
-                Console.SetCursorPosition(X*2 + 1, Y);
-                Console.Write("█");
-            }
-
+            X += 5;  
+            Console.SetCursorPosition(X*2, Y);
+            Console.Write("█");
+            Console.SetCursorPosition(X*2 + 1, Y);
+            Console.Write("█");         
         }
 
         public static void ToDraw(int X, int Y, string text)
@@ -137,12 +128,33 @@ namespace Snake
             Console.SetCursorPosition(X, Y);
             Console.Write(text);
         }
-
-        
+       
         public static void ToDrawScore ()
         {
-            Console.SetCursorPosition(10, 2);
-            Console.Write($"Score: {SnakeCordinates.Count-4}          ");
+            if (SnakeCordinates.Count >=8)
+            {
+                Console.SetCursorPosition(10, 2);
+                Console.Write($"Score: {SnakeCordinates.Count - 8}\t\t\t");
+            }
+            else
+            {
+                Console.SetCursorPosition(10, 2);
+                Console.Write($"Score: 0\t\t\t");
+            }         
+        }
+
+        public static void ToDrawEndScore()
+        {
+            if (SnakeCordinates.Count >= 8)
+            {
+                Console.SetCursorPosition(10, 2);
+                Console.Write($"Game Over. Your Score: {SnakeCordinates.Count - 8}\t\t\t");
+            }
+            else
+            {
+                Console.SetCursorPosition(10, 2);
+                Console.Write($"Game Over. Your Score: 0 \t\t\t");
+            }
         }
 
         public static void ToErase(int X, int Y)
@@ -154,19 +166,5 @@ namespace Snake
             Console.SetCursorPosition(X*2 + 1, Y);
             Console.Write(" ");
         }
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
 }

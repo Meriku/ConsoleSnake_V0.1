@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 namespace Snake
 {
     public class PlayGround : Game
-    {
-     
+    {    
         public static void CreatePlayGround()
         {
             int PlayGroundWidth = CalculatingPlayGround.GetLength(0);       // Ширина поля
             int PlayGroundHeight = CalculatingPlayGround.GetLength(1);      // Высота поля
-
 
             for (int j = 0; j < PlayGroundHeight; j++)              // Высота
             {
@@ -31,11 +29,8 @@ namespace Snake
                     {
                         CalculatingPlayGround[i, j] = " ";          // Игровое поле
                     }
-
                 }
             }
-
         }
-
     }
 }

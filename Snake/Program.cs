@@ -8,6 +8,7 @@ using System.Windows.Input;
 
 namespace Snake
 {
+    
 
     internal class Program
     {
@@ -33,13 +34,18 @@ namespace Snake
                     SnakeMove.Start();
                 }
               
-                if (Game.IsStarted && Game.IsKeyWASD(PressedKey) && Game.IsKeyRightDirect(PressedKey, Game.OldPressedKey))
+                if (Game.IsStarted && !Game.IsGameEnded && Game.IsKeyWASD(PressedKey) && Game.IsKeyRightDirect(PressedKey, Game.OldPressedKey))
                 {                                                           // Если игра начата, передаем нажатие кнопки для дальнейшей обработки
                     lock (locker)
                     {
                         Snake.MoveAndDraw(PressedKey);                      // Передаем нажатую кнопку для движение в заданную сторону
-
                     }
+                }
+
+                if (Game.IsGameEnded)
+                {
+                    Game.ToDrawEndScore();
+                    SnakeMove.Abort();
                 }
             }
         }
@@ -54,11 +60,13 @@ namespace Snake
                     Snake.MoveAndDraw(Game.OldPressedKey);              // Движемся в ту сторону в которую двигались до этого 
                     Thread.Sleep(150);
 
+                    if (Game.IsGameEnded)
+                    {
+                        Game.ToDrawEndScore();
+                        break;
+                    }
                 }
             }           
         }
     }
-
-
-
 }
