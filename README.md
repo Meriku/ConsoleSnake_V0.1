@@ -12,4 +12,6 @@ Whether you're a budding game developer looking to build your skills or simply s
 ## License
 This project is licensed under the MIT License. Feel free to fork and modify it according to your needs.
 
+## Screenshots 
+![Main](/github/Screenshot_2.jpg?raw=true "Main")
 
